@@ -57,29 +57,29 @@ class App extends Component {
         <input
           name="signupUsername"
           value={this.state.signupUsername}
-          onChange={this.onChange}/>
+          onChange={this.onChange}/><br/>
         <input
           name="signupPassword"
           value={this.state.signupPassword}
-          onChange={this.onChange}/>
+          onChange={this.onChange}/><br/>
         <input
           type="button"
           value="Sign Up"
-          onClick={this.signup}/>
+          onClick={this.signup}/><br/><br/>
 
       <h3>Log In:</h3>
       <input
           name="loginUsername"
           value={this.state.loginUsername}
-          onChange={this.onChange}/>
+          onChange={this.onChange}/><br/>
         <input
           name="loginPassword"
           value={this.state.loginPassword}
-          onChange={this.onChange}/>
+          onChange={this.onChange}/><br/>
         <input
           type="button"
           value="Sign In"
-          onClick={this.login}/>
+          onClick={this.login}/><br/><br/>
 
           <button onClick={this.refresh}>Refresh</button>
       </div>
