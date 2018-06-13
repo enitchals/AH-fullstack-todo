@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './App.css';
+axios.defaults.withCredentials = true;
 
 class App extends Component {
   constructor(){
@@ -13,8 +13,6 @@ class App extends Component {
       text: "",
       session: null,
     }
-    this.signup = this.signup.bind(this);
-    this.login = this.login.bind(this);
   }
 
   onChange = event => {
@@ -25,36 +23,30 @@ class App extends Component {
     axios
       .post("http://localhost:8000/register",{
         username: this.state.signupUsername,
-        password: this.state.signupPassword
+        password: this.state.signupPassword,
+        withCredentials: true
       })
-      .then(res => {});
+      .then(res => console.log("RESPONSE", res));
   }
 
   login = () => {
-    // axios
-    //   .post("http://localhost:8000/login",{
-    //     username: this.state.loginUsername,
-    //     password: this.state.loginPassword
-    //   })
-    //   .then(res => {
-    //     this.setState({session: res.session})
-    //     console.log(this.state.session);
-    //   })
-    // const username = this.state.loginUsername;
-    // const password = this.state.loginPassword;
-    // const signin = function(){axios
-    //   .post("http://localhost:8000/login",{username,password})}
-    // const get = function(req, res){ axios
-    //   .get("http://localhost:8000/")
-    //   .then(res => {
-    //     console.log("res:", res);
-    //     this.setState({text: res.message})
-    //     })
-    //   .catch(err => {
-    //     console.log(err);
-    //     })
-    //   }
-    // axios.all([signin(), get()])
+    axios
+      .post("http://localhost:8000/login",{
+        username: this.state.loginUsername,
+        password: this.state.loginPassword,
+        withCredentials: true
+      })
+      .then(res => console.log("RESPONSE", res))
+      .catch(err => console.log(err));
+  }
+
+  refresh = () => {
+    axios.get('http://localhost:8000/')
+      .then(res => {
+        console.log(res);
+        this.setState({text: res.data.message})
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -88,6 +80,8 @@ class App extends Component {
           type="button"
           value="Sign In"
           onClick={this.login}/>
+
+          <button onClick={this.refresh}>Refresh</button>
       </div>
     );
   }

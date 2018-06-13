@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
 
 const User = require('./UserModel');
@@ -20,17 +21,23 @@ const sessionOptions = {
     resave: true,
     saveUninitialized: false,
     name: 'cs10 demo',
+    store: new MongoStore({
+        url: 'mongodb://localhost/after-hours',
+        ttl: 600
+    })
 };
+
 
 //SET UP SERVER
 const server = express();
 server.use(express.json());
-server.use(cors({origin: 'http://localhost:3000', credentials: true}));
+server.use(cors({origin: 'http://localhost:3000', methods: ['GET', 'POST'], credentials: true}));
 server.use(session(sessionOptions));
 
 // MIDDLEWARE
 function protected(req, res, next){
-    if (req.session && req.session.username){
+    console.log("PROTECTED MIDDLEWARE REQ.SESSION:\n", req.session);
+    if (req.session && req.session.user){
         next();
     } else {
         res.status(401).json({message: 'nope!'});
@@ -51,6 +58,7 @@ server.post('/register', (req, res) => {
 
 // LOG IN
 server.post('/login', (req, res) => {
+    console.log("LOGIN REQUEST.SESSION\n", req.session);
     const { username, password } = req.body;
     User.findOne({username})
         .then(user => {
@@ -59,15 +67,15 @@ server.post('/login', (req, res) => {
                     .validatePassword(password)
                     .then(match => {
                         if (match){
-                            req.session.username = user.username;
-                            res.session.username = user.username;
+                            req.session.user = user.username;
                             res.send('have a cookie!');
+                            console.log("SHOULD HAVE REQ.SESSION.USER NOW \n", req.session);
                         } else {
                             res.status(401).send('invalid login');
                         }
                     })
                     .catch(err => {
-                        res.send('error checking credentials');
+                        res.send({error: err.message});
                     })
             }
         })
@@ -78,7 +86,8 @@ server.post('/login', (req, res) => {
 
 // GET DATA
 server.get('/', protected, (req, res) => {
-    res.status(200).json({message: `welcome back, ${req.session.username}`})
+    console.log("REQ PASSED TO GET REQUEST:", req.session);
+    res.status(200).json({message: `welcome back, ${req.session.user}`})
 })
 
 server.listen(port, () => {
