@@ -1,50 +1,22 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import SignUp from './Components/SignUp';
+import SignIn from './Components/SignIn';
 axios.defaults.withCredentials = true;
 
 class App extends Component {
   constructor(){
     super();
     this.state = {
-      signupUsername: "",
-      signupPassword: "",
-      loginUsername: "",
-      loginPassword: "",
-      text: "",
-      session: null,
+      todos: [{title: "sample task"}],
     }
   }
 
-  onChange = event => {
-    this.setState({[event.target.name]: event.target.value})
-  }
-
-  signup = () => {
-    axios
-      .post("http://localhost:8000/register",{
-        username: this.state.signupUsername,
-        password: this.state.signupPassword,
-        withCredentials: true
-      })
-      .then(res => console.log("RESPONSE", res));
-  }
-
-  login = () => {
-    axios
-      .post("http://localhost:8000/login",{
-        username: this.state.loginUsername,
-        password: this.state.loginPassword,
-        withCredentials: true
-      })
-      .then(res => console.log("RESPONSE", res))
-      .catch(err => console.log(err));
-  }
-
   refresh = () => {
-    axios.get('http://localhost:8000/')
+    axios.get('http://localhost:8000/api/todo/all')
       .then(res => {
-        console.log(res);
-        this.setState({text: res.data.message})
+        console.log("RES MESSAGE", res.data.todos);
+        this.setState({todos: res.data.todos})
       })
       .catch(err => console.log(err));
   }
@@ -52,36 +24,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-      <h1>{this.state.text}</h1>
-      <h3>Sign Up:</h3>
-        <input
-          name="signupUsername"
-          value={this.state.signupUsername}
-          onChange={this.onChange}/><br/>
-        <input
-          name="signupPassword"
-          value={this.state.signupPassword}
-          onChange={this.onChange}/><br/>
-        <input
-          type="button"
-          value="Sign Up"
-          onClick={this.signup}/><br/><br/>
-
-      <h3>Log In:</h3>
-      <input
-          name="loginUsername"
-          value={this.state.loginUsername}
-          onChange={this.onChange}/><br/>
-        <input
-          name="loginPassword"
-          value={this.state.loginPassword}
-          onChange={this.onChange}/><br/>
-        <input
-          type="button"
-          value="Sign In"
-          onClick={this.login}/><br/><br/>
-
+      <SignUp/>
+      <br/><br/>
+      <SignIn/>
           <button onClick={this.refresh}>Refresh</button>
+          {this.state.todos.map(todo => <div>{todo.title}</div>)}
       </div>
     );
   }

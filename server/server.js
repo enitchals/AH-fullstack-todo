@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
-
-const User = require('./UserModel');
+const todosRouter = require('../server/Routes/todoRouter');
+const User = require('./Models/UserModel');
+const ToDo = require('./Models/ToDoModel')
 const port = 8000;
 
 mongoose.connect('mongodb://localhost/after-hours').then(() => {
@@ -31,8 +32,10 @@ const sessionOptions = {
 //SET UP SERVER
 const server = express();
 server.use(express.json());
-server.use(cors({origin: 'http://localhost:3000', methods: ['GET', 'POST'], credentials: true}));
 server.use(session(sessionOptions));
+server.use('/api/todo', todosRouter);
+server.use(cors({origin: 'http://localhost:3000', methods: ['GET', 'POST'], credentials: true}));
+
 
 // MIDDLEWARE
 function protected(req, res, next){
